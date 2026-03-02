@@ -276,10 +276,6 @@ class MistralAdapter(ModelAdapter):
 # --------------------
 # Convenience Adapters (model name wrappers)
 # --------------------
-class TrinityOpenRouter(OpenRouterAdapter):
-    def __init__(self, key=None):
-        super().__init__("arcee-ai/trinity-large-preview:free", api_key=key)
-        self.name = "trinity-preview"
 
 class StepFlashOpenRouter(OpenRouterAdapter):
     def __init__(self, key=None):
@@ -300,8 +296,8 @@ class ModelRouter:
         return [a for a in self.adapters if a.name == "mistral-direct"]
 
       if intent == "small":
-        # Small always → Trinity
-        return [a for a in self.adapters if a.name == "openai"]
+        # Small always
+        return [a for a in self.adapters if a.name == "step-3.5-flash"]
 
       if intent == "multimodal":
         return [a for a in self.adapters if a.name in ("imagegen", "trinity-preview")]
@@ -367,7 +363,6 @@ def build_default_router() -> ModelRouter:
     # Prioritized: local/free fast -> normal -> heavy direct
     # Step / flash fast model (OpenRouter)
     adapters.append(StepFlashOpenRouter(key=OPENROUTER_KEY))
-    adapters.append(TrinityOpenRouter(key=OPENROUTER_KEY))
     # Generic OpenRouter wrapper as fallback (if you want other models)
     adapters.append(OpenRouterAdapter(model_name="openai/gpt-4o-mini", api_key=OPENROUTER_KEY))
     # Mistral direct (heavy reasoning)
@@ -609,12 +604,6 @@ def rebuild_router_with_multimodal():
     except Exception:
         # fallback instantiate by positional if previous signature differs
         try: adapters.append(StepFlashOpenRouter(OPENROUTER_KEY))
-        except Exception: pass
-
-    try:
-        adapters.append(TrinityOpenRouter(key=OPENROUTER_KEY))
-    except Exception:
-        try: adapters.append(TrinityOpenRouter(OPENROUTER_KEY))
         except Exception: pass
 
     adapters.append(OpenRouterAdapter(model_name="openai/gpt-4o-mini", api_key=OPENROUTER_KEY))
