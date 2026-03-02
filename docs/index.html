@@ -1497,24 +1497,90 @@ html.dark .plus-panel * {
   }
 
 }
+/* ======================================= */
+/* 🔥 FINAL DEVICE-SAFE PLUS PANEL SYSTEM */
+/* ======================================= */
 
-.tool-square.plus-btn:hover{
-  background: rgba(255,255,255,0.12);
-  transform: translateY(-2px);
+/* DESKTOP VERSION */
+@media (min-width: 881px){
+
+  .plus-panel{
+    position: fixed;
+    left: calc(var(--side-w) + 20px);
+    right: 20px;
+    bottom: 110px;
+    max-width: 720px;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 16px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    z-index: 15000;
+
+    opacity: 0;
+    transform: translateY(10px) scale(.98);
+    pointer-events: none;
+    transition: all .2s ease;
+  }
+
+  .plus-panel.active{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
 }
 
-.tool-square.plus-btn{
-  background: rgba(255,255,255,0.04);
-  border:1px solid rgba(255,215,0,0.12);
-  backdrop-filter: blur(14px);
-}
 
-.tool-square.plus-btn.active{
-  background: rgba(255,215,0,0.12);
-  box-shadow:
-    0 0 0 1px rgba(255,215,0,0.3),
-    0 12px 30px rgba(255,215,0,0.25);
-}
+/* ======================================= */
+/* 📱 MOBILE VERSION (REAL FIX) */
+/* ======================================= */
+
+@media (max-width: 880px){
+
+  .plus-panel{
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+
+    width: 100%;
+    max-width: 100%;
+
+    background: #0f0f12;
+    border-top-left-radius: 22px;
+    border-top-right-radius: 22px;
+
+    padding: 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+
+    z-index: 20000;
+
+    transform: translateY(100%);
+    opacity: 1;
+    pointer-events: none;
+    transition: transform .28s cubic-bezier(.2,.9,.25,1);
+  }
+
+  .plus-panel.active{
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Compose stays clean */
+  .compose{
+    left: 0 !important;
+  }
+
+  }
+
+
 /* temp chats list */
 .temp-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .temp-entry{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
