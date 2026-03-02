@@ -1077,40 +1077,44 @@ html.light .msg.ai{
   opacity: 0.75;
   transform: scale(0.99);
 }  
-/* ===== Plus floating panel & bottom sheet (clean, grid layout) ===== */
+/* ============================= */
+/* ===== PREMIUM + PANEL ======= */
+/* ============================= */
+
 .plus-panel{
-  position: fixed;
-  /* sit centered horizontally between side and right edge */
-  left: calc(var(--side-w) + 18px);
-  right: 18px;
-  bottom: 92px; /* above compose area */
-  background: #000 !important;
-  color: #ffffff !important;
-  backdrop-filter: blur(18px);
-  border-radius: 14px;
-  padding: 12px;
+  position:absolute; /* anchor to compose */
+  bottom:64px;       /* above + button */
+  right:0;           /* align right */
+  width:260px;
+
   display:grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:repeat(2,1fr);
   gap:12px;
-  align-items:flex-start;
-  justify-content:space-between;
-  box-shadow: none; /* remove heavy black shadow for a cleaner look */
-  transform-origin: bottom center;
+
+  padding:14px;
+  border-radius:18px;
+
+  background:rgba(12,12,14,0.95);
+  backdrop-filter:blur(22px);
+
+  border:1px solid rgba(255,255,255,0.06);
+
+  transform-origin:bottom right;
+  transform:translateY(8px) scale(.96);
   opacity:0;
   pointer-events:none;
-  transform: translateY(8px) scale(.98);
-  transition: all .18s cubic-bezier(.2,.9,.25,1);
-  z-index:12000;
-  border:1px solid rgba(255,255,255,0.04);
-  flex-wrap:wrap; /* allow buttons to wrap into rows */
-  max-width: calc(100% - var(--side-w) - 36px);
-}
-.plus-panel.active{
-  opacity:1;
-  pointer-events:all;
-  transform: translateY(0) scale(1);
+
+  transition:
+    opacity .18s ease,
+    transform .22s cubic-bezier(.2,.9,.25,1);
 }
 
+.plus-panel.active{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+  
 /* mode buttons become an even two-column grid */
 .plus-panel .mode-btn{
   height:72px;
@@ -1492,6 +1496,24 @@ html.dark .plus-panel * {
     transform: scale(0.97);
   }
 
+}
+
+.tool-square.plus-btn:hover{
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+
+.tool-square.plus-btn{
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(255,215,0,0.12);
+  backdrop-filter: blur(14px);
+}
+
+.tool-square.plus-btn.active{
+  background: rgba(255,215,0,0.12);
+  box-shadow:
+    0 0 0 1px rgba(255,215,0,0.3),
+    0 12px 30px rgba(255,215,0,0.25);
 }
 /* temp chats list */
 .temp-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
