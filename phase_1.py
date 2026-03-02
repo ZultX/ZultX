@@ -300,7 +300,8 @@ class ModelRouter:
         return [a for a in self.adapters if a.name == "step-3.5-flash"]
 
       if intent == "multimodal":
-        return [a for a in self.adapters if a.name in ("imagegen", "trinity-preview")]
+        return [a for a in self.adapters if a.name == "imagegen"]
+       
 
       if intent == "embed":
         return [a for a in self.adapters if a.name in ("openai", "openrouter")]
@@ -675,7 +676,7 @@ if getattr(ModelRouter, "_mm_patched", False) is False:
             adapter = next((a for a in self.adapters if a.name == "openai"), None)
             if adapter and adapter.check_ready():
                 return adapter.generate(prompt, stream=stream, timeout=timeout)
-            return "Trinity unavailable."
+            return "small not available."
         last_err = None
         for adapter in candidates:
             try:
