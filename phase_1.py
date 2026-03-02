@@ -292,8 +292,7 @@ class ModelRouter:
     def _candidates_for_intent(self, intent: str, complexity: str):
 
       if intent == "reason" or complexity == "heavy":
-        # Heavy always → Mistral first
-        return [a for a in self.adapters if a.name == "mistral-direct"]
+        return [a for a in self.adapters if a.name in ("mistral-direct", "openai")]
 
       if intent == "small":
         # Small always
@@ -673,7 +672,7 @@ if getattr(ModelRouter, "_mm_patched", False) is False:
             return "No model available."
         # HARD LOCK: if small, do NOT fallback to others
         if intent == "small":
-            adapter = next((a for a in self.adapters if a.name == "openai"), None)
+            adapter = next((a for a in self.adapters if a.name == "step-3.5-flash"), None)
             if adapter and adapter.check_ready():
                 return adapter.generate(prompt, stream=stream, timeout=timeout)
             return "small not available."
