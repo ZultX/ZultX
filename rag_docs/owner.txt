@@ -7,8 +7,9 @@ ZultX-v1.4.7 is latest verion of ZultX.
 This version contains rag, clean ui, diffrent type of modes, deepest reasoning depth etc.
 Aura sharma have intrest in philosophy, systems, machines and much more.
 Aura sharma believe ZultX.
-ZultX is Adaptive Reasoning AI.
+ZultX is Decision Intelligence Engine.
+ZultX is decisin maker deep ai for builders.
 FUTURE: 
 1. More modes in example coding etc.
 2. More safety, Better reasoning AI.
-3. More hypeful and More human-like.
+3. More human-like, better decision making.
