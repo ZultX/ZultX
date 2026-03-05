@@ -2027,7 +2027,7 @@ mobileMenuBtn && mobileMenuBtn.addEventListener('click', ()=>{
   sidePanel.classList.toggle('open');
   if(sidePanel.classList.contains('open')) showOverlay(); else hideOverlay();
 });
-  
+
 function runCodeSandbox(code, lang){
 
   const sandbox = window.open("", "_blank");
@@ -2056,10 +2056,13 @@ function runCodeSandbox(code, lang){
       }catch(e){
         document.getElementById("out").textContent = e;
       }
+      <\/script>
+
+      <\/body>
+      <\/html>
     `);
 
   }
-
 }
 
 function updateTokenDisplay(){
