@@ -1493,31 +1493,6 @@ html.dark .plus-panel * {
   }
 
 }
-.ai-pulse{
-  display:flex;
-  gap:6px;
-  align-items:center;
-}
-
-.ai-dot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#ffd54a;
-  opacity:0.6;
-  animation: aiBreath 1.8s ease-in-out infinite;
-}
-
-@keyframes aiBreath{
-  0%,100%{
-    transform:scale(0.8);
-    opacity:0.5;
-  }
-  50%{
-    transform:scale(1.35);
-    opacity:1;
-  }
-}
 /* temp chats list */
 .temp-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .temp-entry{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
@@ -2337,36 +2312,6 @@ function hideUploadSpinner(){
   document.getElementById('uploadSpinner').style.display = 'none';
 }
 
-function createThinkingDots(container){
-  container.innerHTML = "";
-
-  const dotsWrap = document.createElement("div");
-  dotsWrap.className = "ai-pulse";
-
-  container.appendChild(dotsWrap);
-
-  let count = 0;
-
-  function addDot(){
-    if(count >= 3) return;
-
-    const dot = document.createElement("div");
-    dot.className = "ai-dot";
-
-    dotsWrap.appendChild(dot);
-    count++;
-  }
-
-  addDot();
-
-  const interval = setInterval(()=>{
-    if(count >= 3){
-      clearInterval(interval);
-      return;
-    }
-    addDot();
-  },4000);
-}
 /* ---------- Streaming sendMessage() ---------- */
 async function sendMessage(){
   const text = input.value.trim();
@@ -2380,10 +2325,7 @@ async function sendMessage(){
   input.value = '';
   sendBtn.disabled = true;
 
-  let aiDiv = document.createElement('div');
-  aiDiv.className = 'msg ai thinking';
-  chatArea.appendChild(aiDiv);
-  createThinkingDots(aiDiv);
+  let aiDiv = document.createElement('div'); aiDiv.className = 'msg ai thinking'; aiDiv.innerHTML = `<div class="ai-pulse"></div>`;
   chatArea.appendChild(aiDiv);
   try{
     const token = getToken();
@@ -2407,7 +2349,7 @@ async function sendMessage(){
     const data = await res.json();
     const answer = data?.answer || "No response.";
     aiDiv.classList.remove("thinking");
-    setTimeout(()=>fakeStream(aiDiv, answer, 0),200);
+    fakeStream(aiDiv, answer, 0);
     saveMessageToHistory(currentConversationId, 'ai', answer);
   }catch(err){
     console.error(err);
@@ -2477,6 +2419,7 @@ input && input.addEventListener('keydown', function(e) {
 input && input.addEventListener("input", ()=> { input.style.height = "auto"; const maxHeight = 100; input.style.height = Math.min(input.scrollHeight, maxHeight) + "px"; });
 
 /* init: ensure conversation */
+if(!currentConversationId){ currentConversationId = makeConvoId(); localSaveInit(currentConversationId); }
 currentConversationId = localStorage.getItem("zultx_last_convo");
 if(currentConversationId) openConversation(currentConversationId);
 refreshHistoryList();
