@@ -2418,14 +2418,23 @@ input && input.addEventListener('keydown', function(e) {
 });
 input && input.addEventListener("input", ()=> { input.style.height = "auto"; const maxHeight = 100; input.style.height = Math.min(input.scrollHeight, maxHeight) + "px"; });
 
-/* init: ensure conversation */
-if(!currentConversationId){ currentConversationId = makeConvoId(); localSaveInit(currentConversationId); }
-currentConversationId = localStorage.getItem("zultx_last_convo");
-if(currentConversationId) openConversation(currentConversationId);
+/* ---------- Init conversation correctly ---------- */
+
+const savedConvo = localStorage.getItem("zultx_last_convo");
+
+if(savedConvo){
+  currentConversationId = savedConvo;
+  openConversation(savedConvo);
+}else{
+  currentConversationId = makeConvoId();
+  localSaveInit(currentConversationId);
+}
+
 refreshHistoryList();
 centerScreen.style.display = 'flex';
 chatArea.style.display = 'none';
 updateTempVisibility();
+  
 
 /* ---------- Premium UX improvements ---------- */
 function openPremium(mode='login'){
