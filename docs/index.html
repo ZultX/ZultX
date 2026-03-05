@@ -1927,7 +1927,7 @@ html.light .side {
   
   /* FIX 2: CHAT AREA PROPER SCROLLING */
   .chat-wrap {
-    overflow-y: auto !important;
+    overflow-y: auto;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
     scroll-behavior: smooth;
@@ -1946,18 +1946,18 @@ html.light .side {
   .compose {
     position: fixed !important;
     bottom: 0 !important;
-    left: 0 !important;
+    left: 0;
     right: 0 !important;
     z-index: 10000 !important;
     background: rgba(0, 0, 0, 0.85) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
+    backdrop-filter: blur(20px) saturate(180%);
     border-top: 1px solid rgba(255, 215, 0, 0.2) !important;
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) !important;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
   }
   
   html.light .compose {
-    background: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.9);
   }
   
   /* Better touch targets */
@@ -2829,12 +2829,17 @@ async function loadSuggestions() {
       card.innerText = text;
 
       card.onclick = () => {
-        centerScreen.style.display = 'none';
-        chatArea.style.display = 'flex';
-        currentConversationId = makeConvoId();
-        localSaveInit(currentConversationId);
-        sendMessageFromSuggestion(text);
+
+      centerScreen.style.display = 'none';
+      chatArea.style.display = 'flex';
+      suggestGrid.style.display = 'none';
+
+     currentConversationId = null;
+     chatArea.innerHTML = '';
+
+     sendMessageFromSuggestion(text);
 };
+
 
      grid.appendChild(card);
     });
