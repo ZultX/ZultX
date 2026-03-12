@@ -213,7 +213,17 @@ function addSystemMsg(text){
 function fakeStream(element, fullText, speed = 5) {
   element.innerHTML = "";
   let i = 0;
+
   function type() {
+
+    // 🔥 if user left tab → instantly finish
+    if (document.hidden) {
+      element.innerHTML = marked.parse(fullText);
+      element.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
+      enhanceCodeBlocks(element);
+      return;
+    }
+
     if (i < fullText.length) {
       element.textContent += fullText[i++];
       chatArea.scrollTop = chatArea.scrollHeight;
@@ -224,8 +234,10 @@ function fakeStream(element, fullText, speed = 5) {
       enhanceCodeBlocks(element);
     }
   }
+
   type();
 }
+
 function enhanceCodeBlocks(container){
   container.querySelectorAll('pre code').forEach(block => {
 
