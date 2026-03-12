@@ -357,11 +357,11 @@ async function sendMessage(){
 
   try{
     const token = getToken();
-    const sessionId = ensureSessionId();
+    const sessionId = tempMode ? ("temp_" + Date.now()) : ensureSessionId();
     const headers = { "Accept":"application/json", "X-Session-Id": sessionId };
     if(token) headers["Authorization"] = "Bearer " + token;
     let finalMessage = text;
-    if (uploadedFiles.length > 0) {
+    if (!tempMode && uploadedFiles.length > 0) {
       const combinedFiles = uploadedFiles.map(f =>
         `File: ${f.name}\n${f.text}`
       ).join("\n\n");
