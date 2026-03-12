@@ -210,7 +210,7 @@ function addSystemMsg(text){
   chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-function fakeStream(element, fullText, speed = 10) {
+function fakeStream(element, fullText, speed = 5) {
   element.innerHTML = "";
   let i = 0;
   function type() {
@@ -366,8 +366,6 @@ async function sendMessage(){
     const data = await res.json();
     const answer = data?.answer || "No response.";
 
-    // response arrived — clear the long-think timer and remove alert if added
-    if(aiDiv._longThinkTimer){ clearTimeout(aiDiv._longThinkTimer); aiDiv._longThinkTimer = null; }
     const pulseNow = aiDiv.querySelector('.ai-pulse');
     if(pulseNow) pulseNow.classList.remove('alert');
 
