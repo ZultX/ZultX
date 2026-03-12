@@ -330,8 +330,26 @@ async function sendMessage(){
   input.value = '';
   sendBtn.disabled = true;
 
-  let aiDiv = document.createElement('div'); aiDiv.className = 'msg ai thinking'; aiDiv.innerHTML = `<div class="ai-pulse"></div>`;
+  // create thinking bubble
+  let aiDiv = document.createElement('div');
+  aiDiv.className = 'msg ai thinking';
+  aiDiv.innerHTML = `<div class="ai-pulse"></div>`;
   chatArea.appendChild(aiDiv);
+  chatArea.scrollTop = chatArea.scrollHeight;
+
+  // start 2s timer: if still thinking after 2000ms, add red "alert" circle
+  aiDiv._longThinkTimer = setTimeout(() => {
+    const pulse = aiDiv.querySelector('.ai-pulse');
+    if(pulse){
+      pulse.classList.add('alert'); // toggles the red-circle style from CSS
+    } else {
+      // fallback: if the inner pulse isn't there for some reason, prepend one
+      const fallback = document.createElement('div');
+      fallback.className = 'ai-pulse alert';
+      aiDiv.prepend(fallback);
+    }
+  }, 1000);
+
   try{
     const token = getToken();
     const sessionId = ensureSessionId();
@@ -348,18 +366,38 @@ async function sendMessage(){
       Attached files:
       ${combinedFiles}
       `;
-}
+    }
+
     const res = await fetch(`${API_BASE}/ask?q=${encodeURIComponent(finalMessage)}`, { method:"GET", headers });
     if(!res.ok) throw new Error('Server error');
     const data = await res.json();
     const answer = data?.answer || "No response.";
+
+    // response arrived — clear the long-think timer and remove alert if added
+    if(aiDiv._longThinkTimer){ clearTimeout(aiDiv._longThinkTimer); aiDiv._longThinkTimer = null; }
+    const pulseNow = aiDiv.querySelector('.ai-pulse');
+    if(pulseNow) pulseNow.classList.remove('alert');
+
     aiDiv.classList.remove("thinking");
     fakeStream(aiDiv, answer, 0);
     saveMessageToHistory(currentConversationId, 'ai', answer);
   }catch(err){
     console.error(err);
+
+    // clear timer and remove alert if added
+    if(aiDiv._longThinkTimer){ clearTimeout(aiDiv._longThinkTimer); aiDiv._longThinkTimer = null; }
+    const pulseNow = aiDiv.querySelector('.ai-pulse');
+    if(pulseNow) pulseNow.classList.remove('alert');
+
     aiDiv.textContent = "⚠️ Connection error.";
-  }finally{ renderFilePreview(); updateTokenDisplay(); sendBtn.disabled = false; updateTempVisibility(); }
+  }finally{
+    // ensure no timer leak in any code path
+    if(aiDiv._longThinkTimer){ clearTimeout(aiDiv._longThinkTimer); aiDiv._longThinkTimer = null; }
+    renderFilePreview();
+    updateTokenDisplay();
+    sendBtn.disabled = false;
+    updateTempVisibility();
+  }
 }
 
 /* ---------- Open / New conversation ---------- */
