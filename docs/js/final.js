@@ -341,20 +341,7 @@ async function sendMessage(){
     if(pulse){
       pulse.classList.add("alert");
     }
-  },2000); 
-
-  // start 2s timer: if still thinking after 2000ms, add red "alert" circle
-  aiDiv._longThinkTimer = setTimeout(() => {
-    const pulse = aiDiv.querySelector('.ai-pulse');
-    if(pulse){
-      pulse.classList.add('alert'); // toggles the red-circle style from CSS
-    } else {
-      // fallback: if the inner pulse isn't there for some reason, prepend one
-      const fallback = document.createElement('div');
-      fallback.className = 'ai-pulse alert';
-      aiDiv.prepend(fallback);
-    }
-  }, 1000);
+  },1000); 
 
   try{
     const token = getToken();
