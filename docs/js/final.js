@@ -329,6 +329,14 @@ function hideUploadSpinner(){
   document.getElementById('uploadSpinner').style.display = 'none';
 }
 
+let tempSessionId = null;
+
+function getTempSession(){
+  if(!tempSessionId){
+    tempSessionId = "temp_" + Date.now();
+  }
+  return tempSessionId;
+}
 /* ---------- Streaming sendMessage() ---------- */
 async function sendMessage(){
   const text = input.value.trim();
@@ -357,7 +365,7 @@ async function sendMessage(){
 
   try{
     const token = getToken();
-    const sessionId = tempMode ? ("temp_" + Date.now()) : ensureSessionId();
+    const sessionId = tempMode ? getTempSession() : ensureSessionId();
     const headers = { "Accept":"application/json", "X-Session-Id": sessionId };
     if(token) headers["Authorization"] = "Bearer " + token;
     let finalMessage = text;
