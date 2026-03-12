@@ -336,6 +336,12 @@ async function sendMessage(){
   aiDiv.innerHTML = `<div class="ai-pulse"></div>`;
   chatArea.appendChild(aiDiv);
   chatArea.scrollTop = chatArea.scrollHeight;
+  const alertTimer = setTimeout(()=>{
+    const pulse = aiDiv.querySelector(".ai-pulse");
+    if(pulse){
+      pulse.classList.add("alert");
+    }
+  },2000); 
 
   // start 2s timer: if still thinking after 2000ms, add red "alert" circle
   aiDiv._longThinkTimer = setTimeout(() => {
@@ -378,6 +384,7 @@ async function sendMessage(){
     const pulseNow = aiDiv.querySelector('.ai-pulse');
     if(pulseNow) pulseNow.classList.remove('alert');
 
+    clearTimeout(alertTimer);
     aiDiv.classList.remove("thinking");
     fakeStream(aiDiv, answer, 0);
     saveMessageToHistory(currentConversationId, 'ai', answer);
