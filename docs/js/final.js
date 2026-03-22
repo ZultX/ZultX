@@ -210,7 +210,7 @@ function addSystemMsg(text){
   chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-function fakeStream(element, fullText, speed = 3) {
+function fakeStream(element, fullText, speed = 5) {
   element.innerHTML = "";
   let i = 0;
 
