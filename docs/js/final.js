@@ -391,10 +391,7 @@ async function sendMessage(){
 
     clearTimeout(alertTimer);
     aiDiv.classList.remove("thinking");
-    aiDiv.innerHTML = marked.parse(answer);
-    aiDiv.querySelectorAll("pre code")
-        .forEach(block => hljs.highlightElement(block));
-    enhanceCodeBlocks(aiDiv);
+    fakeStream(aiDiv, answer, 0);
     saveMessageToHistory(currentConversationId, 'ai', answer);
   }catch(err){
     console.error(err);
