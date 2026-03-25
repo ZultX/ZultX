@@ -81,7 +81,7 @@ copyUpiBtn && (copyUpiBtn.onclick = async ()=> {
 });
 
 function shareChat(){
-  const shareData = { title: 'ZultX AI', text: 'ZultX — Decision AI. Try it now.', url: 'https://zultx.github.io/ZultX/' };
+  const shareData = { title: 'ZultX AI', text: 'ZultX AI Decision Engine – Autonomous Intelligence System. Free for now, try it!', url: 'https://zultx.github.io/ZultX-v2/' };
   if(navigator.share){
     navigator.share(shareData).catch(()=>{});
   } else {
