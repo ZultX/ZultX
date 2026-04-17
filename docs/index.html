@@ -268,7 +268,7 @@
     function appendAssistantChunk(chunk) {
       currentAssistantText += chunk;
       if (currentAssistantMsg) {
-        currentAssistantMsg.innerHTML = escapeHtml(currentAssistantText);
+        currentAssistantMsg.textContent = currentAssistantText;
         scrollToBottom();
       }
     }
@@ -298,7 +298,9 @@
       }
 
       currentAssistantText = text || '(empty response)';
-      currentAssistantMsg.innerHTML = escapeHtml(currentAssistantText);
+      currentAssistantMsg.textContent = currentAssistantText;
+
+      
       setStatus('Done');
       scrollToBottom();
     }
