@@ -368,32 +368,47 @@
       setStatus('Done');
     }
 
+
     async function ask() {
       const prompt = getPrompt();
-      if (!prompt) return;
+      if (!prompt || isStreaming) return;
 
       addMessage('user', prompt);
       inputEl.value = '';
-      currentAssistantMsg = addMessage('assistant', '...');
-      setStatus('Loading...');
+
+      currentAssistantText = '';
+      currentAssistantMsg = addMessage('assistant', '');
+
+      setButtons(true);
+      setStatus('Connecting...');
+      scrollToBottom();
+
+      abortController = new AbortController();
 
       try {
-        const res = await fetch(
-          `https://zultx.onrender.com/ask?q=${encodeURIComponent(prompt)}`
-        );
-
-        if (!res.ok) throw new Error('Server error');
-
-        const data = await res.json();
-        const answer = data?.answer || "No response.";
-
-        currentAssistantMsg.innerHTML = escapeHtml(answer);
-        setStatus('Done');
+        await streamSSE(prompt);   // 🔥 THIS IS THE FIX
       } catch (err) {
-        currentAssistantMsg.innerHTML = `Error: ${err.message}`;
-        setStatus('Failed');
+        if (err && err.name === 'AbortError') {
+          setStatus('Stopped');
+          return;
+        }
+
+        // fallback
+        try {
+          await fallbackFullText(prompt);
+        } catch (fallbackErr) {
+          currentAssistantMsg.innerHTML =
+            `Error: ${fallbackErr?.message || fallbackErr}`;
+          setStatus('Failed');
+        }
+      } finally {
+        setButtons(false);
+        abortController = null;
+        showEmpty();
       }
-    }
+  }
+    
+    
 
     
 
