@@ -9,29 +9,31 @@
     :root {
       --bg: #0b1020;
       --panel: #10172d;
-      --panel-2: #0f172a;
       --border: rgba(255,255,255,.08);
       --text: #e5e7eb;
       --muted: #94a3b8;
       --accent: #7c3aed;
-      --accent-2: #22c55e;
       --user: #1f2937;
       --assistant: #111827;
       --shadow: 0 20px 60px rgba(0,0,0,.35);
     }
+
     * { box-sizing: border-box; }
     html, body { height: 100%; }
+
     body {
       margin: 0;
       background: radial-gradient(1200px 600px at top, rgba(124,58,237,.16), transparent 50%), var(--bg);
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
+
     .app {
       min-height: 100vh;
       display: grid;
       grid-template-rows: auto 1fr auto;
     }
+
     header {
       padding: 16px 18px;
       border-bottom: 1px solid var(--border);
@@ -41,6 +43,12 @@
       top: 0;
       z-index: 10;
     }
+
+    .wrap {
+      width: min(900px, 100% - 24px);
+      margin: 0 auto;
+    }
+
     .brand {
       display: flex;
       align-items: center;
@@ -48,6 +56,7 @@
       font-weight: 800;
       letter-spacing: .2px;
     }
+
     .brand-badge {
       width: 12px;
       height: 12px;
@@ -55,18 +64,17 @@
       background: linear-gradient(135deg, var(--accent), #06b6d4);
       box-shadow: 0 0 0 6px rgba(124,58,237,.12);
     }
-    .wrap {
-      width: min(900px, 100% - 24px);
-      margin: 0 auto;
-    }
+
     .chat {
       padding: 18px 0 140px;
     }
+
     .messages {
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
+
     .msg {
       max-width: min(760px, 92%);
       padding: 14px 16px;
@@ -76,22 +84,37 @@
       white-space: pre-wrap;
       line-height: 1.5;
       overflow-wrap: anywhere;
+      position: relative;
     }
+
     .msg.user {
       align-self: flex-end;
       background: linear-gradient(180deg, rgba(124,58,237,.14), rgba(124,58,237,.08)), var(--user);
       border-top-right-radius: 6px;
     }
+
     .msg.assistant {
       align-self: flex-start;
       background: linear-gradient(180deg, rgba(34,197,94,.08), rgba(255,255,255,.02)), var(--assistant);
       border-top-left-radius: 6px;
     }
-    .meta {
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
+
+    .msg-content {
+      display: inline;
     }
+
+    .cursor {
+      display: inline-block;
+      margin-left: 1px;
+      opacity: 1;
+      animation: blink 1s steps(1, end) infinite;
+      color: rgba(229,231,235,.9);
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
     .composer {
       position: sticky;
       bottom: 0;
@@ -99,6 +122,7 @@
       background: linear-gradient(to top, rgba(11,16,32,1) 75%, rgba(11,16,32,.4));
       border-top: 1px solid rgba(255,255,255,.04);
     }
+
     .composer-inner {
       display: flex;
       gap: 10px;
@@ -109,6 +133,7 @@
       background: rgba(16,23,45,.9);
       box-shadow: var(--shadow);
     }
+
     textarea {
       width: 100%;
       min-height: 52px;
@@ -122,7 +147,9 @@
       line-height: 1.5;
       padding: 14px 12px;
     }
+
     textarea::placeholder { color: #64748b; }
+
     button {
       border: 0;
       outline: 0;
@@ -131,36 +158,42 @@
       font: inherit;
       border-radius: 16px;
       padding: 14px 18px;
-      transition: transform .12s ease, opacity .12s ease, background .12s ease;
+      transition: transform .12s ease, opacity .12s ease;
     }
+
     button:active { transform: scale(.98); }
+
     .send {
       background: linear-gradient(135deg, var(--accent), #2563eb);
       min-width: 92px;
       font-weight: 700;
     }
-    .send[disabled] { opacity: .6; cursor: not-allowed; }
+
+    .send[disabled] {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
     .stop {
       background: rgba(239, 68, 68, .18);
       border: 1px solid rgba(239, 68, 68, .28);
       min-width: 92px;
       font-weight: 700;
     }
+
     .status {
       padding: 8px 2px 0;
       color: var(--muted);
       font-size: 13px;
       min-height: 20px;
     }
+
     .hint {
       padding: 10px 2px 0;
       color: var(--muted);
       font-size: 12px;
     }
-    code, pre {
-      white-space: pre-wrap;
-      overflow-x: auto;
-    }
+
     .empty {
       margin: 42px 0 0;
       padding: 22px;
@@ -170,6 +203,7 @@
       text-align: center;
       background: rgba(255,255,255,.02);
     }
+
     @media (max-width: 640px) {
       .wrap { width: min(100% - 14px, 100%); }
       .msg { max-width: 96%; }
@@ -183,7 +217,10 @@
   <div class="app">
     <header>
       <div class="wrap">
-        <div class="brand"><span class="brand-badge"></span><span>ZultX</span></div>
+        <div class="brand">
+          <span class="brand-badge"></span>
+          <span>ZultX</span>
+        </div>
       </div>
     </header>
 
@@ -200,13 +237,14 @@
           <button id="stopBtn" class="stop" style="display:none;">Stop</button>
         </div>
         <div id="status" class="status"></div>
-        <div class="hint">Streaming first. If SSE is unavailable, it falls back to full text.</div>
+        <div class="hint">Fast SSE first. If SSE is unavailable, it falls back to full text.</div>
       </div>
     </section>
   </div>
 
   <script>
     const API_BASE = 'https://zultx.onrender.com/ask';
+
     const messagesEl = document.getElementById('messages');
     const emptyEl = document.getElementById('empty');
     const inputEl = document.getElementById('input');
@@ -215,9 +253,14 @@
     const statusEl = document.getElementById('status');
 
     let abortController = null;
+    let isStreaming = false;
     let currentAssistantMsg = null;
     let currentAssistantText = '';
-    let isStreaming = false;
+    let currentAssistantContentNode = null;
+    let currentCursorNode = null;
+
+    let pendingText = '';
+    let flushScheduled = false;
 
     function setStatus(text) {
       statusEl.textContent = text || '';
@@ -234,17 +277,8 @@
         .replaceAll('>', '&gt;');
     }
 
-    function addMessage(role, text = '') {
-      const el = document.createElement('div');
-      el.className = `msg ${role}`;
-      el.innerHTML = escapeHtml(text);
-      messagesEl.appendChild(el);
-      showEmpty();
-      return el;
-    }
-
     function scrollToBottom() {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      window.scrollTo({ top: document.body.scrollHeight });
     }
 
     function setButtons(streaming) {
@@ -252,6 +286,33 @@
       sendBtn.style.display = streaming ? 'none' : 'inline-block';
       stopBtn.style.display = streaming ? 'inline-block' : 'none';
       inputEl.disabled = streaming;
+    }
+
+    function addMessage(role, text = '') {
+      const el = document.createElement('div');
+      el.className = `msg ${role}`;
+
+      if (role === 'assistant') {
+        const content = document.createElement('span');
+        content.className = 'msg-content';
+        content.textContent = text;
+
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        cursor.textContent = '▋';
+
+        el.appendChild(content);
+        el.appendChild(cursor);
+
+        currentAssistantContentNode = content;
+        currentCursorNode = cursor;
+      } else {
+        el.innerHTML = escapeHtml(text);
+      }
+
+      messagesEl.appendChild(el);
+      showEmpty();
+      return el;
     }
 
     function getPrompt() {
@@ -264,21 +325,63 @@
       url.searchParams.set('stream', '1');
       return url.toString();
     }
+
+    function scheduleFlush() {
+      if (flushScheduled) return;
+      flushScheduled = true;
+
+      requestAnimationFrame(() => {
+        flushScheduled = false;
+        if (!pendingText) return;
+
+        currentAssistantText += pendingText;
+        pendingText = '';
+
+        if (currentAssistantContentNode) {
+          currentAssistantContentNode.textContent = currentAssistantText;
+        }
+
+        scrollToBottom();
+      });
+    }
+
     function appendAssistantChunk(chunk) {
       if (!chunk) return;
 
-      currentAssistantText += chunk;
+      pendingText += chunk;
+      scheduleFlush();
+    }
 
-      if (currentAssistantMsg) {
-        currentAssistantMsg.textContent += chunk; // append only
-        scrollToBottom();
+    function finalizeAssistantMessage() {
+      if (pendingText) {
+        currentAssistantText += pendingText;
+        pendingText = '';
       }
-   }
-  
-    
+
+      if (currentAssistantContentNode) {
+        currentAssistantContentNode.textContent = currentAssistantText;
+      }
+
+      if (currentCursorNode) {
+        currentCursorNode.remove();
+        currentCursorNode = null;
+      }
+
+      scrollToBottom();
+    }
+
+    function resetAssistantState() {
+      currentAssistantMsg = null;
+      currentAssistantText = '';
+      currentAssistantContentNode = null;
+      currentCursorNode = null;
+      pendingText = '';
+      flushScheduled = false;
+    }
 
     async function fallbackFullText(prompt) {
       setStatus('Loading full text fallback…');
+
       const url = new URL(API_BASE);
       url.searchParams.set('q', prompt);
       url.searchParams.set('stream', '0');
@@ -302,15 +405,21 @@
       }
 
       currentAssistantText = text || '(empty response)';
-      currentAssistantMsg.textContent = currentAssistantText;
+      if (currentAssistantContentNode) {
+        currentAssistantContentNode.textContent = currentAssistantText;
+      }
+      if (currentCursorNode) {
+        currentCursorNode.remove();
+        currentCursorNode = null;
+      }
 
-      
       setStatus('Done');
       scrollToBottom();
     }
 
     async function streamSSE(prompt) {
       const url = buildUrl(prompt);
+
       const res = await fetch(url, {
         method: 'GET',
         headers: {
@@ -325,14 +434,14 @@
       const reader = res.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let buffer = '';
-      let sawStreamData = false;
+      let sawAnyData = false;
 
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        if (chunk) sawStreamData = true;
+        if (chunk) sawAnyData = true;
         buffer += chunk;
 
         let idx;
@@ -342,41 +451,48 @@
 
           const lines = packet.split(/\r?\n/);
           let eventData = '';
+
           for (const line of lines) {
             if (line.startsWith('data:')) eventData += line.slice(5);
-            if (line.startsWith('event:')) continue;
           }
 
+          eventData = eventData.trim();
           if (!eventData) continue;
-          const parsed = JSON.parse(eventData);
-          const token = parsed.token ?? parsed.delta ?? parsed.text ?? parsed.content;
-          if (token === '[DONE]') {
+
+          if (eventData === '[DONE]') {
+            finalizeAssistantMessage();
             setStatus('Done');
             return;
           }
-          
 
-          try {          
-            if (typeof token === 'string' && token) {
-              appendAssistantChunk(token);
-              setStatus('Streaming…');
-            }
+          let token = '';
+          try {
+            const parsed = JSON.parse(eventData);
+            token = parsed.token ?? parsed.delta ?? parsed.text ?? parsed.content ?? '';
           } catch {
-            appendAssistantChunk(eventData);
-            console.warn('Bad SSE packet:', eventData);
-            setStatus('Streaming…');
+            token = eventData;
           }
+
+          if (!token || token === '\u200b') continue;
+
+          if (token === '[DONE]') {
+            finalizeAssistantMessage();
+            setStatus('Done');
+            return;
+          }
+
+          appendAssistantChunk(token);
+          setStatus('Streaming…');
         }
       }
 
-      if (!sawStreamData && !currentAssistantText) {
+      if (!sawAnyData && !currentAssistantText) {
         throw new Error('No SSE data received');
       }
 
-      setStatus('');  
-      
+      finalizeAssistantMessage();
+      setStatus('');
     }
-
 
     async function ask() {
       const prompt = getPrompt();
@@ -384,10 +500,10 @@
 
       addMessage('user', prompt);
       inputEl.value = '';
+      inputEl.style.height = 'auto';
 
-      currentAssistantText = '';
+      resetAssistantState();
       currentAssistantMsg = addMessage('assistant', '');
-
       setButtons(true);
       setStatus('Connecting...');
       scrollToBottom();
@@ -395,19 +511,25 @@
       abortController = new AbortController();
 
       try {
-        await streamSSE(prompt);   // 🔥 THIS IS THE FIX
+        await streamSSE(prompt);
       } catch (err) {
         if (err && err.name === 'AbortError') {
           setStatus('Stopped');
           return;
         }
 
-        // fallback
         try {
           await fallbackFullText(prompt);
         } catch (fallbackErr) {
-          currentAssistantMsg.innerHTML =
-            `Error: ${fallbackErr?.message || fallbackErr}`;
+          if (currentAssistantContentNode) {
+            currentAssistantContentNode.textContent = `Error: ${fallbackErr?.message || fallbackErr}`;
+          } else if (currentAssistantMsg) {
+            currentAssistantMsg.textContent = `Error: ${fallbackErr?.message || fallbackErr}`;
+          }
+          if (currentCursorNode) {
+            currentCursorNode.remove();
+            currentCursorNode = null;
+          }
           setStatus('Failed');
         }
       } finally {
@@ -415,16 +537,17 @@
         abortController = null;
         showEmpty();
       }
-  }
-    
-    
-
-    
+    }
 
     function stopAsk() {
       if (abortController) abortController.abort();
       setButtons(false);
       setStatus('Stopped');
+
+      if (currentCursorNode) {
+        currentCursorNode.remove();
+        currentCursorNode = null;
+      }
     }
 
     sendBtn.addEventListener('click', ask);
@@ -445,4 +568,4 @@
     showEmpty();
   </script>
 </body>
-</html>
+          </html>
