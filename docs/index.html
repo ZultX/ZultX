@@ -264,17 +264,18 @@
       url.searchParams.set('stream', '1');
       return url.toString();
     }
-
     function appendAssistantChunk(chunk) {
-      if (chunk) {
-          currentAssistantText += chunk;
-      }
+      if (!chunk) return;
+
+      currentAssistantText += chunk;
 
       if (currentAssistantMsg) {
-        currentAssistantMsg.textContent = currentAssistantText;
+        currentAssistantMsg.textContent += chunk; // append only
         scrollToBottom();
       }
-    }
+   }
+  
+    
 
     async function fallbackFullText(prompt) {
       setStatus('Loading full text fallback…');
@@ -347,20 +348,22 @@
           }
 
           if (!eventData) continue;
-          if (eventData === '[DONE]') {
+          parsed = JSON.parse(eventData);
+          const token = parsed.token ?? parsed.delta ?? parsed.text ?? parsed.content;
+          if (token === '[DONE]') {
             setStatus('Done');
-            return;
+            return;const
           }
+          
 
-          try {
-            const parsed = JSON.parse(eventData);
-            const token = parsed.token ?? parsed.delta ?? parsed.text ?? parsed.content;
+          try {          
             if (typeof token === 'string' && token) {
               appendAssistantChunk(token);
               setStatus('Streaming…');
             }
           } catch {
             appendAssistantChunk(eventData);
+            console.warn('Bad SSE packet:', eventData);
             setStatus('Streaming…');
           }
         }
