@@ -248,6 +248,7 @@
   </div>
 
   <script src="https://js.puter.com/v2/"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const API_BASE = 'https://zultx.onrender.com/ask';
 
@@ -547,72 +548,57 @@
     }
 
     async function ask() {
-      const prompt = getPrompt();
-      if (!prompt || isStreaming) return;
+        const prompt = getPrompt();
+        if (!prompt || isStreaming) return;
 
-      addMessage('user', prompt);
-      inputEl.value = '';
-      inputEl.style.height = 'auto';
+        addMessage('user', prompt);
+        inputEl.value = '';
+        inputEl.style.height = 'auto';
 
-      resetAssistantState();
-      currentAssistantMsg = addMessage('assistant', '');
-      setButtons(true);
-      setStatus('Connecting...');
-      scrollToBottom();
+        resetAssistantState();
+        currentAssistantMsg = addMessage('assistant', '');
+        setButtons(true);
+        setStatus('Connecting...');
+        scrollToBottom();
 
-      abortController = new AbortController();
+        abortController = new AbortController();
 
-      try {
-        const mode = document.getElementById('modeSwitch')?.value || 'backend';
-
-        if (mode === 'puter') {
-          await streamPuter(prompt);
-        } else {
-          await streamSSE(prompt);
-        }
-
-      } catch (err) {
-       if (err && err.name === 'AbortError') {
-          setStatus('Stopped');
-          return;
-       }
-
-      const mode = document.getElementById('modeSwitch')?.value || 'backend';
-
-      // 🔥 ONLY fallback if backend mode
-      if (mode === 'backend') {
         try {
-          await fallbackFullText(prompt);
-        } catch (fallbackErr) {
-          showError(fallbackErr);
+            const mode = document.getElementById('modeSwitch')?.value || 'backend';
+
+            if (mode === 'puter') {
+                await streamPuter(prompt);
+            } else {
+                await streamSSE(prompt);
+            }
+
+        } catch (err) {
+            if (err && err.name === 'AbortError') {
+                setStatus('Stopped');
+                return;
+            }
+
+            const mode = document.getElementById('modeSwitch')?.value || 'backend';
+
+            if (mode === 'backend') {
+                try {
+                    await fallbackFullText(prompt);
+                } catch (fallbackErr) {
+                    showError(fallbackErr);
+                }
+            } else {
+                showError(err);
+            }
+
+        } finally {
+            setButtons(false);
+            abortController = null;
+            showEmpty();
         }
-      } else {
-        // ❌ DO NOT fallback for puter
-        showError(err);
-     }
-    }    
-      
-        try {
-          await fallbackFullText(prompt);
-        } catch (fallbackErr) {
-          if (currentAssistantContentNode) {
-            currentAssistantContentNode.textContent = `Error: ${fallbackErr?.message || fallbackErr}`;
-          } else if (currentAssistantMsg) {
-            currentAssistantMsg.textContent = `Error: ${fallbackErr?.message || fallbackErr}`;
-          }
-          if (currentCursorNode) {
-            currentCursorNode.remove();
-            currentCursorNode = null;
-          }
-          setStatus('Failed');
-        }
-      } finally {
-        setButtons(false);
-        abortController = null;
-        showEmpty();
-      }
     }
 
+    
+    
     function stopAsk() {
       if (abortController) abortController.abort();
 
