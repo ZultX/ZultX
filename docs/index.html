@@ -216,12 +216,17 @@
 <body>
   <div class="app">
     <header>
+      
       <div class="wrap">
         <div class="brand">
           <span class="brand-badge"></span>
           <span>ZultX</span>
         </div>
       </div>
+      <select id="modeSwitch">
+        <option value="backend">Backend (ZultX)</option>
+        <option value="puter">Puter AI</option>
+      </select>
     </header>
 
     <main class="wrap chat">
@@ -242,6 +247,7 @@
     </section>
   </div>
 
+  <script src="https://js.puter.com/v2/"></script>
   <script>
     const API_BASE = 'https://zultx.onrender.com/ask';
 
@@ -331,6 +337,37 @@
       return el;
     }
 
+    async function streamPuter(prompt) {
+      setStatus('Streaming (puter)...');
+
+      try {
+        const response = await puter.ai.chat(prompt, {
+          model: 'gpt-4.1-mini', // or any supported model
+          stream: true
+        });
+
+        for await (const part of response) {
+          const text = part?.text || '';
+
+          if (!text) continue;
+
+          appendAssistantChunk(text);
+          scheduleMarkdownRender();
+        }
+
+        finalizeAssistantMessage();
+        setStatus('Done');
+
+      } catch (err) {
+        if (err?.name === 'AbortError') {
+          setStatus('Stopped');
+          return;
+        }
+
+        throw err;
+      }
+          }
+    
     function getPrompt() {
       return inputEl.value.trim();
     }
@@ -526,7 +563,12 @@
       abortController = new AbortController();
 
       try {
-        await streamSSE(prompt);
+        const mode = document.getElementById('modeSwitch')?.value || 'backend';
+        if (mode === 'puter') {
+          await streamPuter(prompt);
+        } else {
+          await streamSSE(prompt);
+        }        
       } catch (err) {
         if (err && err.name === 'AbortError') {
           setStatus('Stopped');
@@ -556,6 +598,12 @@
 
     function stopAsk() {
       if (abortController) abortController.abort();
+
+      // Puter cancel (soft cancel)
+      if (typeof puter !== 'undefined' && puter.ai?.cancel) {
+        try { puter.ai.cancel(); } catch {}
+      }
+
       setButtons(false);
       setStatus('Stopped');
 
@@ -563,7 +611,8 @@
         currentCursorNode.remove();
         currentCursorNode = null;
       }
-    }
+    }    
+    
 
     sendBtn.addEventListener('click', ask);
     stopBtn.addEventListener('click', stopAsk);
