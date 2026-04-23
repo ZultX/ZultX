@@ -246,6 +246,8 @@
     <section class="composer">
       <div class="wrap">
         <div class="composer-inner">
+          <input type="file" id="imageInput" accept="image/*" hidden />
+          <button id="imgBtn">📎</button>
           <textarea id="input" placeholder="Ask ZultX..."></textarea>
           <button id="sendBtn" class="send">Send</button>
           <button id="stopBtn" class="stop" style="display:none;">Stop</button>
@@ -278,6 +280,24 @@
     let pendingText = '';
     let flushScheduled = false;
 
+    const imageInput = document.getElementById("imageInput");
+    const imgBtn = document.getElementById("imgBtn");
+
+    let selectedImage = null;
+
+    imgBtn.addEventListener("click", () => {
+      imageInput.click();
+    });
+
+    imageInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      selectedImage = file;
+
+      setStatus("Image selected ✅");
+   });
+    
     function setStatus(text) {
       statusEl.textContent = text || '';
     }
@@ -347,36 +367,69 @@
       return el;
     }
 
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+    
     async function streamPuter(prompt) {
-      setStatus('Streaming (puter)...');
+      setStatus("Streaming (puter)...");
 
       try {
-        const response = await puter.ai.chat(prompt, {
-          model: 'openai/gpt-5.2-chat', // or any supported model
-          stream: true
-        });
 
+        let messageContent;
+
+        if (selectedImage) {
+           // Convert image to base64
+          const base64 = await fileToBase64(selectedImage);
+
+          messageContent = [
+            { type: "text", text: prompt },
+            {
+              type: "image_url",
+              image_url: {
+                url: base64
+              }
+            }
+          ];
+        } else {
+          messageContent = prompt;
+     }
+
+        const response = await puter.ai.chat(
+          messageContent,
+          {
+            model: "openai/gpt-4o", // ✅ use vision model
+            stream: true
+          }
+      );
+ 
         for await (const part of response) {
-          const text = part?.text || '';
-
+          const text = part?.text || "";
           if (!text) continue;
 
           appendAssistantChunk(text);
           scheduleMarkdownRender();
-        }
+       }
 
         finalizeAssistantMessage();
-        setStatus('Done');
+        setStatus("Done");
+
+        selectedImage = null; // reset after sending
 
       } catch (err) {
-        if (err?.name === 'AbortError') {
-          setStatus('Stopped');
+        if (err?.name === "AbortError") {
+          setStatus("Stopped");
           return;
         }
-
         throw err;
       }
-          }
+    }
+    
     
     function getPrompt() {
       return inputEl.value.trim();
