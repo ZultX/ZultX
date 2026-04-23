@@ -415,7 +415,6 @@
            part?.message?.content ||
            part?.choices?.[0]?.delta?.content ||
            "";
-          const text = part?.text || "";
           if (!text) continue;
 
           appendAssistantChunk(text);
